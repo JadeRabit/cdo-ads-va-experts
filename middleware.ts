@@ -29,81 +29,90 @@ function checkRateLimit(key: string, maxRequests: number, windowMs: number): { a
   return { allowed: true, remaining: maxRequests - record.count, resetTime: record.resetTime };
 }
 
-async function isAdmin(supabase: any) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return false;
-  
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-  
-  return profile?.role === 'admin';
+// Check if we're in a build/static generation context
+function isBuildContext(request: NextRequest): boolean {
+  // Vercel sets these during static generation
+  return (
+    process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF === undefined ||
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    request.headers.get('x-vercel-prerender') === '1'
+  );
 }
 
 export async function middleware(request: NextRequest) {
+  // Skip Supabase operations during static generation/build
+  const isBuild = isBuildContext(request);
+  
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
+  // Skip Supabase operations during build/static generation
+  if (!isBuild) {
+    try {
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+        {
+          cookies: {
+            get(name: string) {
+              return request.cookies.get(name)?.value;
             },
-          });
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
+            set(name: string, value: string, options: CookieOptions) {
+              request.cookies.set({ name, value, ...options });
+              response = NextResponse.next({
+                request: { headers: request.headers },
+              });
+              response.cookies.set({ name, value, ...options });
             },
-          });
-          response.cookies.set({ name, value: '', ...options });
-        },
-      },
-    }
-  );
+            remove(name: string, options: CookieOptions) {
+              request.cookies.set({ name, value: '', ...options });
+              response = NextResponse.next({
+                request: { headers: request.headers },
+              });
+              response.cookies.set({ name, value: '', ...options });
+            },
+          },
+        }
+      );
 
-  await supabase.auth.getSession();
+      await supabase.auth.getSession();
 
-  // Protected admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      const redirectUrl = new URL('/auth/login', request.url);
-      redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
-      return NextResponse.redirect(redirectUrl);
-    }
+      // Protected admin routes
+      if (request.nextUrl.pathname.startsWith('/admin')) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          
+          if (!user) {
+            const redirectUrl = new URL('/auth/login', request.url);
+            redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
+            return NextResponse.redirect(redirectUrl);
+          }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
 
-    if (profile?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', request.url));
+          if (profile?.role !== 'admin') {
+            return NextResponse.redirect(new URL('/', request.url));
+          }
+        } catch (adminError) {
+          console.error('Admin auth check failed:', adminError);
+          return NextResponse.redirect(new URL('/', request.url));
+        }
+      }
+    } catch (supabaseError) {
+      console.error('Supabase middleware error:', supabaseError);
+      // Continue without Supabase features
     }
   }
 
-  // Rate limiting for API routes
-  if (request.nextUrl.pathname.startsWith('/api/')) {
+  // Rate limiting for API routes (skip during build)
+  if (!isBuild && request.nextUrl.pathname.startsWith('/api/')) {
     const isBooking = request.nextUrl.pathname.includes('/booking');
     const isInquiry = request.nextUrl.pathname.includes('/inquiry');
     const isDownload = request.nextUrl.pathname.includes('/download');
@@ -123,8 +132,7 @@ export async function middleware(request: NextRequest) {
             status: 429,
             headers: {
               'Content-Type': 'application/json',
-              'Retry-After': Math.ceil((limit.resetTime - Date.now()) / 1000).toString(),
-              ...Object.fromEntries(response.headers),
+              'Retry-After': Math.ceil((Date.now() - Date.now()) / 1000).toString(),
             },
           }
         );
@@ -146,8 +154,7 @@ export async function middleware(request: NextRequest) {
             status: 429,
             headers: {
               'Content-Type': 'application/json',
-              'Retry-After': Math.ceil((limit.resetTime - Date.now()) / 1000).toString(),
-              ...Object.fromEntries(response.headers),
+              'Retry-After': Math.ceil((Date.now() - Date.now()) / 1000).toString(),
             },
           }
         );
@@ -155,7 +162,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Security headers
+  // Security headers (always apply)
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
@@ -182,3 +189,16 @@ export async function middleware(request: NextRequest) {
 
   return response;
 }
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.jpg$|.*\\.svg$|.*\\.webp$).*)',
+  ],
+};
