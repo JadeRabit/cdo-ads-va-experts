@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { ProductCard } from './ProductCard';
 import { cn } from '@/lib/utils';
+import { Target, FileText, BarChart2, UserCheck } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -28,8 +29,8 @@ const mockProducts: Product[] = [
     shortDescription: 'Complete campaign structure templates for e-commerce, lead gen, and local businesses',
     price: 149900,
     currency: 'PHP',
-    image: '',
-    imageAlt: '',
+    image: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?q=80&w=800&auto=format&fit=crop',
+    imageAlt: 'Facebook Ads analytics dashboard on a laptop',
     features: ['12 campaign structures', 'Audience targeting guides', 'Budget allocation formulas', 'Testing frameworks'],
     category: 'Templates',
     isFree: false,
@@ -43,8 +44,8 @@ const mockProducts: Product[] = [
     shortDescription: 'Contracts, questionnaires, SOPs, and checklists for agency client onboarding',
     price: 99900,
     currency: 'PHP',
-    image: '',
-    imageAlt: '',
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop',
+    imageAlt: 'Business planning documents and laptop on a desk',
     features: ['Service agreements', 'Discovery questionnaires', '15+ SOPs', 'Onboarding checklists'],
     category: 'Operations',
     isFree: false,
@@ -58,8 +59,8 @@ const mockProducts: Product[] = [
     shortDescription: 'Professional creative briefs, performance reports, and client presentation decks',
     price: 79900,
     currency: 'PHP',
-    image: '',
-    imageAlt: '',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop',
+    imageAlt: 'Designer working on creative brand materials',
     features: ['Creative brief templates', 'Weekly/monthly reports', 'Client presentation decks', 'KPI dashboards'],
     category: 'Reporting',
     isFree: false,
@@ -73,8 +74,8 @@ const mockProducts: Product[] = [
     shortDescription: 'Step-by-step process to hire, onboard, and train high-performing virtual assistants',
     price: 0,
     currency: 'PHP',
-    image: '',
-    imageAlt: '',
+    image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=800&auto=format&fit=crop',
+    imageAlt: 'Virtual assistant workspace with notebook and laptop',
     features: ['Job description templates', 'Interview scorecards', '30-day training plan', 'Performance metrics'],
     category: 'Free',
     isFree: true,
@@ -82,8 +83,6 @@ const mockProducts: Product[] = [
     gradient: 'from-green-500/20 via-emerald-500/10 to-green-500/20',
   },
 ];
-
-import { Target, FileText, BarChart2, UserCheck } from 'lucide-react';
 
 export function ProductGrid() {
   return (

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ const testimonials: Testimonial[] = [
     author: "Maria Santos",
     role: "Founder",
     company: "GlowSkin PH",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     rating: 5,
     result: "3.5x ROAS in 60 days",
   },
@@ -36,6 +38,7 @@ const testimonials: Testimonial[] = [
     author: "James Chen",
     role: "Marketing Director",
     company: "FitGear Co.",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     rating: 5,
     result: "40% lower CPA",
   },
@@ -45,6 +48,7 @@ const testimonials: Testimonial[] = [
     author: "Ana Rodriguez",
     role: "Owner",
     company: "Boho Home Decor",
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
     rating: 5,
     result: "20+ hours saved weekly",
   },
@@ -54,6 +58,7 @@ const testimonials: Testimonial[] = [
     author: "Kevin Park",
     role: "Co-Founder",
     company: "ScaleUp Agency",
+    avatar: "https://randomuser.me/api/portraits/men/75.jpg",
     rating: 5,
     result: "Months of work saved",
   },
@@ -63,6 +68,7 @@ const testimonials: Testimonial[] = [
     author: "Lisa Tan",
     role: "E-commerce Manager",
     company: "TechStyle PH",
+    avatar: "https://randomuser.me/api/portraits/women/12.jpg",
     rating: 5,
     result: "2.8x ROAS PH market",
   },
@@ -72,6 +78,7 @@ const testimonials: Testimonial[] = [
     author: "Robert Lim",
     role: "CEO",
     company: "PetCare Plus",
+    avatar: "https://randomuser.me/api/portraits/men/41.jpg",
     rating: 5,
     result: "100% satisfaction",
   },
@@ -238,9 +245,19 @@ export function Testimonials() {
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                              className="h-10 w-10 rounded-full bg-gold/10 flex items-center justify-center text-gold font-semibold"
+                              className="relative h-10 w-10 overflow-hidden rounded-full bg-gold/10 flex items-center justify-center text-gold font-semibold"
                             >
-                              {testimonial.author.charAt(0)}
+                              {testimonial.avatar ? (
+                                <Image
+                                  src={testimonial.avatar}
+                                  alt={`Photo of ${testimonial.author}`}
+                                  fill
+                                  sizes="40px"
+                                  className="object-cover"
+                                />
+                              ) : (
+                                testimonial.author.charAt(0)
+                              )}
                             </motion.div>
                             <div>
                               <p className="font-semibold text-foreground">{testimonial.author}</p>

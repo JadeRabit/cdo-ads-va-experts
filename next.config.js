@@ -12,6 +12,16 @@ const nextConfig = {
         hostname: '*.supabase.co',
         pathname: '/storage/v1/object/sign/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me',
+        pathname: '/api/portraits/**',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
   },

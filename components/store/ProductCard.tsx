@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,17 +32,19 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const priceText = product.isFree ? 'Free' : formatCurrency(product.price, product.currency);
   const cardId = `product-${product.id}`;
+  const [imgError, setImgError] = React.useState(false);
+  const showPhoto = Boolean(product.image) && !imgError;
 
   return (
     <article className="group" role="listitem" aria-labelledby={`${cardId}-title`}>
       <Card className="h-full flex flex-col overflow-hidden border-border hover:border-gold/30 transition-all duration-normal bg-navy-light">
-        <div className="relative aspect-video overflow-hidden">
-          <div 
-            className="absolute inset-0 rounded-t-2xl bg-gradient-to-br"
+        <div className="relative aspect-video overflow-hidden bg-navy">
+          <div
+            className="absolute inset-0 bg-gradient-to-br"
             style={{ background: product.gradient }}
             aria-hidden="true"
           />
-          <div 
+          <div
             className="absolute inset-0 flex items-center justify-center"
             aria-hidden="true"
           >
@@ -49,6 +52,16 @@ export function ProductCard({ product }: ProductCardProps) {
               {product.icon}
             </div>
           </div>
+          {showPhoto && (
+            <Image
+              src={product.image}
+              alt={product.imageAlt || product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              onError={() => setImgError(true)}
+            />
+          )}
           <div className="absolute top-3 left-3">
             <Badge variant={product.isFree ? 'success' : 'gold'} className="text-xs" aria-label={`Category: ${product.category}`}>
               {product.category}

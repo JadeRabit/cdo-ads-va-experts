@@ -1,9 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, CheckCircle2, FileText, Shield, ArrowLeft, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react';
+import { Download, CheckCircle2, FileText, Shield, ArrowLeft, ExternalLink, AlertCircle, CheckCircle, Target, BarChart2, UserCheck } from 'lucide-react';
 import { cn, formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
 import { toast } from '@/components/ui/use-toast';
@@ -23,8 +24,8 @@ interface Product {
   isFree: boolean;
   fileFormat: string;
   fileSize: string;
-  icon: React.ReactNode;
-  gradient: string;
+  icon?: React.ReactNode;
+  gradient?: string;
 }
 
 interface ProductDetailProps {
@@ -100,6 +101,22 @@ export function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const priceText = product.isFree ? 'Free' : formatCurrency(product.price, product.currency);
+  const [imgError, setImgError] = React.useState(false);
+  const showPhoto = Boolean(product.image) && !imgError;
+  const fallbackIcon =
+    product.icon ??
+    (product.category === 'Templates' ? (
+      <Target className="h-16 w-16" aria-hidden="true" />
+    ) : product.category === 'Operations' ? (
+      <FileText className="h-16 w-16" aria-hidden="true" />
+    ) : product.category === 'Reporting' ? (
+      <BarChart2 className="h-16 w-16" aria-hidden="true" />
+    ) : (
+      <UserCheck className="h-16 w-16" aria-hidden="true" />
+    ));
+  const fallbackGradient =
+    product.gradient ??
+    'linear-gradient(135deg, rgba(234,179,8,0.25), rgba(234,179,8,0.05))';
 
   return (
     <article className="section-padding bg-navy" aria-labelledby="product-name">
@@ -120,16 +137,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div className="relative aspect-square max-w-xl mx-auto lg:mx-0">
-            <div className="absolute inset-0 rounded-2xl" style={{ background: product.gradient }} aria-hidden="true" />
+            <div className="absolute inset-0 rounded-2xl" style={{ background: fallbackGradient }} aria-hidden="true" />
             <div className="relative rounded-2xl overflow-hidden border border-border bg-navy-light shadow-gold-lg h-full">
-              <div 
+              <div
                 className="absolute inset-0 flex items-center justify-center"
                 aria-hidden="true"
               >
                 <div className="text-8xl opacity-30">
-                  {product.icon}
+                  {fallbackIcon}
                 </div>
               </div>
+              {showPhoto && (
+                <Image
+                  src={product.image}
+                  alt={product.imageAlt || product.name}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                  onError={() => setImgError(true)}
+                />
+              )}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                 <Badge variant={product.isFree ? 'success' : 'gold'} aria-label={`Category: ${product.category}`}>
                   {product.category}

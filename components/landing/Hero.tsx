@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, Target, Users, BarChart2, Zap } from 'lucide-react';
@@ -84,6 +85,63 @@ export function Hero({ className }: HeroProps) {
               <div className="flex items-center space-x-2">
                 <Zap className="h-5 w-5 text-gold" aria-hidden="true" />
                 <span>Fast Turnaround</span>
+              </div>
+            </div>
+          </FadeInUp>
+
+          <FadeInUp delay={0.5}>
+            <div className="mx-auto max-w-3xl">
+              <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                <div className="relative h-32 overflow-hidden rounded-2xl border border-border sm:h-44">
+                  <Image
+                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop"
+                    alt="Facebook Ads performance dashboard showing growth"
+                    fill
+                    sizes="(max-width: 640px) 33vw, 320px"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent" aria-hidden="true" />
+                  <p className="absolute bottom-2 left-3 text-xs font-semibold text-white">3.5x ROAS</p>
+                </div>
+                <div className="relative h-32 overflow-hidden rounded-2xl border border-gold/30 sm:h-44">
+                  <Image
+                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop"
+                    alt="CDO Ads and VA Experts team planning a client campaign"
+                    fill
+                    sizes="(max-width: 640px) 33vw, 320px"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent" aria-hidden="true" />
+                  <p className="absolute bottom-2 left-3 text-xs font-semibold text-white">Expert Team</p>
+                </div>
+                <div className="relative h-32 overflow-hidden rounded-2xl border border-border sm:h-44">
+                  <Image
+                    src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=800&auto=format&fit=crop"
+                    alt="Strategy session with a happy client"
+                    fill
+                    sizes="(max-width: 640px) 33vw, 320px"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent" aria-hidden="true" />
+                  <p className="absolute bottom-2 left-3 text-xs font-semibold text-white">100% Recommended</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-center gap-3">
+                <div className="flex -space-x-2" aria-hidden="true">
+                  {[
+                    'https://randomuser.me/api/portraits/women/44.jpg',
+                    'https://randomuser.me/api/portraits/men/32.jpg',
+                    'https://randomuser.me/api/portraits/women/68.jpg',
+                    'https://randomuser.me/api/portraits/men/75.jpg',
+                  ].map((src) => (
+                    <span key={src} className="relative h-8 w-8 overflow-hidden rounded-full border-2 border-navy bg-navy-light">
+                      <Image src={src} alt="" fill sizes="32px" className="object-cover" />
+                    </span>
+                  ))}
+                </div>
+                <p className="text-body-sm text-foreground-muted">
+                  Trusted by <span className="font-semibold text-foreground">50+ growing brands</span> in PH & worldwide
+                </p>
               </div>
             </div>
           </FadeInUp>
