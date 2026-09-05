@@ -2,33 +2,53 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: 'Services', href: '#services' },
-  { name: 'How It Works', href: '#funnel' },
+  { name: 'Services', href: '/#services' },
+  { name: 'How It Works', href: '/#funnel' },
   { name: 'Digital Products', href: '/products' },
-  { name: 'Testimonials', href: '#testimonials' },
+  { name: 'Testimonials', href: '/#testimonials' },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  React.useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false);
+    };
+    document.addEventListener('keydown', handleKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-40 transition-all duration-normal',
-        scrolled
-          ? 'bg-navy/90 backdrop-blur-md border-b border-border'
+        scrolled || mobileMenuOpen
+          ? 'bg-navy/95 backdrop-blur-md border-b border-border'
           : 'bg-transparent'
       )}
     >
@@ -54,11 +74,11 @@ export function Header() {
           </div>
 
           <div className="hidden md:flex md:items-center md:space-x-4">
-            <Link href="#booking" className="text-body-sm font-medium text-foreground-muted hover:text-gold transition-colors">
+            <Link href="/booking" className="text-body-sm font-medium text-foreground-muted hover:text-gold transition-colors">
               Book Free Consultation
             </Link>
             <Button size="sm" asChild>
-              <Link href="#booking" className="w-full">
+              <Link href="/booking">
                 Claim ₱1,000 OFF
               </Link>
             </Button>
@@ -79,7 +99,7 @@ export function Header() {
           id="mobile-menu"
           className={cn(
             'md:hidden overflow-hidden transition-all duration-normal ease-in-out',
-            mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+            mobileMenuOpen ? 'max-h-[34rem] opacity-100' : 'max-h-0 opacity-0'
           )}
           role="navigation"
           aria-label="Mobile navigation"
@@ -97,14 +117,14 @@ export function Header() {
             ))}
             <div className="pt-4 space-y-3 border-t border-border">
               <Link
-                href="#booking"
+                href="/booking"
                 className="block py-2 text-body font-medium text-foreground-muted hover:text-gold transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Book Free Consultation
               </Link>
               <Button className="w-full" asChild>
-                <Link href="#booking" onClick={() => setMobileMenuOpen(false)} className="w-full">
+                <Link href="/booking" onClick={() => setMobileMenuOpen(false)}>
                   Claim ₱1,000 OFF
                 </Link>
               </Button>
