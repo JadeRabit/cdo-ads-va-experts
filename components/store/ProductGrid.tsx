@@ -16,6 +16,8 @@ interface Product {
   features: string[];
   category: string;
   isFree: boolean;
+  icon: React.ReactNode;
+  gradient: string;
 }
 
 const mockProducts: Product[] = [
@@ -26,11 +28,13 @@ const mockProducts: Product[] = [
     shortDescription: 'Complete campaign structure templates for e-commerce, lead gen, and local businesses',
     price: 149900,
     currency: 'PHP',
-    image: '/products/ads-template-kit.jpg',
-    imageAlt: 'Facebook Ads Campaign Template Kit preview',
+    image: '',
+    imageAlt: '',
     features: ['12 campaign structures', 'Audience targeting guides', 'Budget allocation formulas', 'Testing frameworks'],
     category: 'Templates',
     isFree: false,
+    icon: <Target className="h-8 w-8" aria-hidden="true" />,
+    gradient: 'from-amber-500/20 via-orange-500/10 to-amber-500/20',
   },
   {
     id: '2',
@@ -39,11 +43,13 @@ const mockProducts: Product[] = [
     shortDescription: 'Contracts, questionnaires, SOPs, and checklists for agency client onboarding',
     price: 99900,
     currency: 'PHP',
-    image: '/products/onboarding-bundle.jpg',
-    imageAlt: 'Client Onboarding & SOP Bundle preview',
+    image: '',
+    imageAlt: '',
     features: ['Service agreements', 'Discovery questionnaires', '15+ SOPs', 'Onboarding checklists'],
     category: 'Operations',
     isFree: false,
+    icon: <FileText className="h-8 w-8" aria-hidden="true" />,
+    gradient: 'from-blue-500/20 via-cyan-500/10 to-blue-500/20',
   },
   {
     id: '3',
@@ -52,11 +58,13 @@ const mockProducts: Product[] = [
     shortDescription: 'Professional creative briefs, performance reports, and client presentation decks',
     price: 79900,
     currency: 'PHP',
-    image: '/products/creative-templates.jpg',
-    imageAlt: 'Ad Creative Brief & Report Templates preview',
+    image: '',
+    imageAlt: '',
     features: ['Creative brief templates', 'Weekly/monthly reports', 'Client presentation decks', 'KPI dashboards'],
     category: 'Reporting',
     isFree: false,
+    icon: <BarChart2 className="h-8 w-8" aria-hidden="true" />,
+    gradient: 'from-purple-500/20 via-pink-500/10 to-purple-500/20',
   },
   {
     id: '4',
@@ -65,13 +73,17 @@ const mockProducts: Product[] = [
     shortDescription: 'Step-by-step process to hire, onboard, and train high-performing virtual assistants',
     price: 0,
     currency: 'PHP',
-    image: '/products/va-checklist.jpg',
-    imageAlt: 'VA Hiring & Training Checklist preview',
+    image: '',
+    imageAlt: '',
     features: ['Job description templates', 'Interview scorecards', '30-day training plan', 'Performance metrics'],
     category: 'Free',
     isFree: true,
+    icon: <UserCheck className="h-8 w-8" aria-hidden="true" />,
+    gradient: 'from-green-500/20 via-emerald-500/10 to-green-500/20',
   },
 ];
+
+import { Target, FileText, BarChart2, UserCheck } from 'lucide-react';
 
 export function ProductGrid() {
   return (

@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +20,8 @@ interface Product {
   features: string[];
   category: string;
   isFree: boolean;
+  icon: React.ReactNode;
+  gradient: string;
 }
 
 interface ProductCardProps {
@@ -33,17 +34,21 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="group" role="listitem" aria-labelledby={`${cardId}-title`}>
-      <Card className="h-full flex flex-col overflow-hidden border-border hover:border-gold/30 transition-all duration-normal">
-        <div className="relative aspect-video overflow-hidden bg-navy-light">
-          <Image
-            src={product.image}
-            alt={product.imageAlt}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            placeholder="blur"
-            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+      <Card className="h-full flex flex-col overflow-hidden border-border hover:border-gold/30 transition-all duration-normal bg-navy-light">
+        <div className="relative aspect-video overflow-hidden">
+          <div 
+            className="absolute inset-0 rounded-t-2xl bg-gradient-to-br"
+            style={{ background: product.gradient }}
+            aria-hidden="true"
           />
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            aria-hidden="true"
+          >
+            <div className="text-6xl opacity-30 group-hover:opacity-50 transition-opacity duration-500">
+              {product.icon}
+            </div>
+          </div>
           <div className="absolute top-3 left-3">
             <Badge variant={product.isFree ? 'success' : 'gold'} className="text-xs" aria-label={`Category: ${product.category}`}>
               {product.category}

@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Download, CheckCircle2, FileText, Shield, ArrowLeft, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react';
@@ -24,6 +23,8 @@ interface Product {
   isFree: boolean;
   fileFormat: string;
   fileSize: string;
+  icon: React.ReactNode;
+  gradient: string;
 }
 
 interface ProductDetailProps {
@@ -39,7 +40,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
     setDownloadStatus('idle');
     try {
       if (product.isFree) {
-        // Free product - direct download via signed URL
         const response = await fetch(`/api/download?slug=${product.slug}`);
         if (response.ok) {
           const blob = await response.blob();
@@ -66,13 +66,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
           });
         }
       } else {
-        // Paid product - redirect to Stripe Checkout
         const response = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             productId: product.id,
-            customerEmail: '', // Would need to get from auth or prompt
+            customerEmail: '',
             customerName: '',
           }),
         });
@@ -105,7 +104,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
   return (
     <article className="section-padding bg-navy" aria-labelledby="product-name">
       <div className="container-custom">
-        {/* Live region for download status */}
         <div aria-live="polite" aria-atomic="true" className="sr-only">
           {downloadStatus === 'success' && 'Download started successfully.'}
           {downloadStatus === 'error' && 'Download failed. Please try again.'}
@@ -122,16 +120,16 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div className="relative aspect-square max-w-xl mx-auto lg:mx-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent rounded-2xl blur-xl" aria-hidden="true" />
-            <div className="relative rounded-2xl overflow-hidden border border-border bg-navy-light shadow-gold-lg">
-              <Image
-                src={product.image}
-                alt={product.imageAlt}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
+            <div className="absolute inset-0 rounded-2xl" style={{ background: product.gradient }} aria-hidden="true" />
+            <div className="relative rounded-2xl overflow-hidden border border-border bg-navy-light shadow-gold-lg h-full">
+              <div 
+                className="absolute inset-0 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                <div className="text-8xl opacity-30">
+                  {product.icon}
+                </div>
+              </div>
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                 <Badge variant={product.isFree ? 'success' : 'gold'} aria-label={`Category: ${product.category}`}>
                   {product.category}
